@@ -155,14 +155,17 @@ Route::group( ['middleware' => ['auth','administrador'], 'prefix'=>'admin'], fun
 	Route::post('profesorasignatura', ['as' => 'profesorasignatura', 'uses' => 'Administrador\ProfesorController@store']);
 
 	//Tarjetas de Notas
-	Route::get('tarjetas', ['as' => 'tarjetas', 'uses' => 'Administrador\TarjetasController@index']);
-	Route::get('tarjetas/new', ['as' => 'tarjetasnew', 'uses' => 'Administrador\TarjetasController@create']);
+	Route::get('tarjetas', 	    ['as' => 'tarjetas', 'uses' => 'Administrador\TarjetasController@index']);
+	Route::get('tarjetas/new',  ['as' => 'tarjetasnew', 'uses' => 'Administrador\TarjetasController@create']);
 	Route::post('tarjetas/new', ['as' => 'tarjetasnew', 'uses' => 'Administrador\TarjetasController@store']);
 
-	//Tarjetas de Notas
-	Route::get('bloque', ['as' => 'bloque', 'uses' => 'Administrador\BloqueController@index']);
-	Route::get('bloque/new', ['as' => 'bloquenew', 'uses' => 'Administrador\BloqueController@create']);
+	Route::get('bloque', 	  ['as' => 'bloque', 'uses' => 'Administrador\BloqueController@index']);
+	Route::get('bloque/new',  ['as' => 'bloquenew', 'uses' => 'Administrador\BloqueController@create']);
 	Route::post('bloque/new', ['as' => 'bloquenew', 'uses' => 'Administrador\BloqueController@store']);
+
+	Route::get('tarjetas/bloques', ['as' => 'tarjetabloques', 'uses' => 'Administrador\TarjetasController@show']);
+	Route::get('tarjetas/{id}',    ['as' => 'tarjetadelete', 'uses' => 'Administrador\TarjetasController@destroy']);
+	Route::get('tarjetas/bloque/{id}',['as' => 'tarjetabloquedelete', 'uses' => 'Administrador\TarjetasController@bloquedestroy']);
 });
 
 //AREA RESPONSABLE

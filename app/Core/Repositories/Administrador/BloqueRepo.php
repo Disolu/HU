@@ -2,56 +2,69 @@
 namespace App\Core\Repositories\Administrador;
 use App\Core\Entities\Tarjeta;
 use App\Core\Entities\TarjetaBloque;
+use App\Core\Entities\Bimestre;
+use App\Core\Entities\Bloque;
 use App\Core\Entities\TarjetaBloqueCriterio;
 use App\Core\Entities\Nivel;
 use Auth;
 
 class BloqueRepo {
-   
+
   public function getBloques()
   {
-    $tarjeta = Tarjeta::all();
-    return $tarjeta;
+    return TarjetaBloque::all();
+  }
+
+  public function getBimestres()
+  {
+    return Bimestre::all();
   }
 
   public function getTarjetas()
   {
-    $nivel = Tarjeta::orderBy('idnivel','desc')->get();
-    return $nivel;
+    return Tarjeta::orderBy('idnivel','desc')->get();
   }
 
 	public function SaveTarjeta($request)
 	{
-    $tarjeta = Tarjeta::create([
+    return Tarjeta::create([
       'nombre' => $request['nombre'],
       'idnivel' => $request['idnivel'],
       'updated_at' => ''
     ]);
-    return $tarjeta;
 	}
   
-  public function lastTarjeta()
+  public function SaveTarjetaBloque($request)
   {
-    return TarjetaBloque::orderby('created_at','DESC')->take(1)->get();
+    return TarjetaBloque::create([
+      'idbloque'   => $request['idbloque'],
+      'idtarjeta'  => $request['idtarjeta'],
+      'idbimestre' => $request['idbimestre'],
+      'usercreate' => Auth::user()->id,
+      'updated_at' => ''
+    ]);
+  }
+  
+  public function lastBloque()
+  {
+    return Bloque::orderby('created_at','DESC')->take(1)->get();
   }
 
   public function SaveBloque($request)
   {
-    $tarjeta = TarjetaBloque::create([
+    return Bloque::create([
       'nombre' => $request['nombre'],
       'usercreate' => Auth::user()->id,
       'updated_at' => ''
     ]);
-    return $tarjeta;
   }
   public function SaveCriterio($data)
   {
-    $tarjeta = TarjetaBloqueCriterio::create([
+    return TarjetaBloqueCriterio::create([
       'criterio' => $data['criterio'],
-      'idtarjetabloque' => $data['idtarjetabloque'],
+      'idbloque' => $data['idbloque'],
       'usercreate' => Auth::user()->id,
       'updated_at' => ''
     ]);
-    return $tarjeta;
   }
 }

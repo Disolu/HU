@@ -14,6 +14,11 @@ class Tarjeta extends Model
     'usercreate'
     ];
 
+    public function tarjetabloque()
+    {
+        return $this->hasMany('App\Core\Entities\TarjetaBloque','idtarjeta','idtarjeta');
+    }
+
     public function nivel()
     {
         return $this->belongsTo('App\Core\Entities\Nivel','idnivel','idnivel');

@@ -20,18 +20,29 @@
 									<thead>
 										<tr>
 											<th>Nombre</th>
-											<th>Nivel</th>
-											<th>Sede</th>
+											<th>Bimestre</th>
+											<th>Tarjeta</th>
 											<th>Criterios</th>
 										</tr>
 									</thead>
 									<tbody>
 									@foreach($bloques as $bloque)
 										<tr>
-											<td>{!! $bloque->nombre !!}</td>
-											<td> - </td>
-											<td> - </td>
-											<td> - </td>
+											<td>
+												<code>{!! $bloque->tarjeta->nivel->sede->nombre !!}</code>
+												<strong>{!! $bloque->bloque->nombre !!}</strong>
+											</td>
+											<td>{!! $bloque->bimestre->nombre !!}</td>
+											<td class="text-warning">{!! $bloque->tarjeta->nombre !!}</td>
+											<td>
+											@if($bloque->bloque->criterios)
+												<ul>
+												@foreach($bloque->bloque->criterios as $criterios)
+													<li class="text-info"><strong>{!! $criterios->criterio !!}</strong></li>
+												@endforeach
+												</ul>
+											@endif
+											</td>
 										</tr>
 									@endforeach	
 									</tbody>

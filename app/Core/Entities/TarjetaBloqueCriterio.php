@@ -10,7 +10,7 @@ class TarjetaBloqueCriterio extends Model
     protected $dates = ['deleted_at'];
     protected $fillable = [
     'idbloquecriterio',
-    'idtarjetabloque', 
+    'idbloque', 
     'criterio', 
     'usercreate'
     ];

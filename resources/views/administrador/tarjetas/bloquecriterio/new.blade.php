@@ -10,6 +10,7 @@
 		<div class="panel-body">
 			@include('alertas.request')
 			@include('alertas.success')
+			@include('alertas.error')
 			{!! Form::open(['route' => 'bloquenew', 'method' => 'post']) !!}
 			{!! Form::token() !!}	
 				<div class="form-group">
@@ -28,17 +29,33 @@
 						<p><a href="#" id="mascampos">+ Agregar más criterios</a></p>
 					</div>
 					<div class="col-md-6">
-						<h5>Tarjetas</h5>
-						<ul>
-						@foreach($tarjetas as $tarjeta)
-							<li>
-							<input type="checkbox" name="tarjeta[]" value="{!! $tarjeta->idtarjeta !!}">
-							<label for="">
-								{!! $tarjeta->nivel->sede->nombre !!} | <strong>{!! $tarjeta->nivel->nombre !!}</strong> | <strong><code>{!! $tarjeta->nombre !!}</code></strong>
-							</label>
-							</li>
-						@endforeach
-						</ul>
+						<div class="form-block">
+							<h5><strong>Tarjetas</strong></h5>
+							<ul>
+								@foreach($tarjetas as $tarjeta)
+									<li>
+									<input type="checkbox" name="tarjeta[]" value="{!! $tarjeta->idtarjeta !!}">
+									<label for="">
+										{!! $tarjeta->nivel->sede->nombre !!} | <strong>{!! $tarjeta->nivel->nombre !!}</strong> | <strong><code>{!! $tarjeta->nombre !!}</code></strong>
+									</label>
+									</li>
+								@endforeach
+							</ul>
+						</div>
+
+						<div class="form-block">
+							<h5><strong>Bimestres</strong></h5>
+							<ul>
+								@foreach($bimestres as $bimestre)
+									<li>
+									<input type="radio" name="bimestre" value="{!! $bimestre->idbimestre !!}">
+									<label for="">
+										<strong>{!! $bimestre->nombre !!}</strong>
+									</label>
+									</li>
+								@endforeach
+							</ul>
+						</div>
 					</div>					
 				</div>
 

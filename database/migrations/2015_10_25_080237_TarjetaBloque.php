@@ -3,17 +3,16 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TarjetaBloqueCriterios extends Migration
+class TarjetaBloque extends Migration
 {
-
     public function up()
     {
-        Schema::create('tarjetabloque_criterios', function (Blueprint $table) {
-            $table->increments('idbloquecriterio');
-            $table->string('criterio');
-
+        Schema::create('tarjetabloque', function (Blueprint $table) {
+            $table->increments('idtarjetabloque');
             $table->integer('idbloque')->unsigned();
-            $table->foreign('idbloque')->references('idbloque')->on('bloque')->onUpdate('cascade');
+            $table->integer('idtarjeta')->unsigned();
+            $table->integer('idbimestre')->unsigned();
+            
             $table->integer('usercreate')->unsigned();
             $table->foreign('usercreate')->references('id')->on('users')->onUpdate('cascade');
             $table->integer('userupdate');
@@ -25,6 +24,6 @@ class TarjetaBloqueCriterios extends Migration
 
     public function down()
     {
-        Schema::drop('tarjetabloque_criterios');
+        Schema::drop('tarjetabloque');
     }
 }
