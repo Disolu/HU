@@ -303,6 +303,23 @@
 										</li>
 									</ul>
 								</li>
+						<li class="nav-parent">
+									<a>
+										<i class="fa fa-copy" aria-hidden="true"></i>
+										<span>Pérdida de Beneficio</span>
+									</a>
+									<ul class="nav nav-children">
+										<li>
+											<a href="{!! route('incidenciasbuscar') !!}">
+												Busqueda de incidencias
+											</a>
+										</li>
+									</ul>
+								</li>
+
+
+
+
 							</ul>
 							@show
 						</nav>

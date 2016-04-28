@@ -2,7 +2,6 @@
 namespace App\Core\Repositories\Alumno;
 use App\Core\Entities\Alumno;
 use App\Core\Entities\Restringidos;
-
 use App\Core\Entities\AlumnoApoderado;
 use App\Core\Entities\AlumnoDatos;
 use App\Core\Entities\AlumnoMatricula;
@@ -10,15 +9,14 @@ use App\Core\Entities\AlumnoObservacion;
 use App\Core\Entities\Vacante;
 use App\Core\Entities\AlumnoDeudas;
 use App\Core\Entities\Mensualidades;
+use App\Core\Entities\RecepcionPagos;
 use App\Core\Repositories\PeriodoRepo;
 use DB;
-
 class AlumnoRepo {
     public function __construct(PeriodoRepo $PeriodoRepo)
     {
         $this->PeriodoRepo = $PeriodoRepo;
     }
-
     public function getAlumnoJoins($alumno)
     {
         return Alumno::
@@ -27,6 +25,21 @@ class AlumnoRepo {
         ->where('idalumno','=', $alumno)
         ->get();
     }
+
+      public function getAlumnoincidencias($alumno)
+    {
+      
+        return Alumnodeudas::
+        select(DB::raw("alumnodeudas.idalumno,sum(incidence) as incidencias"))
+        ->leftJoin('alumno', 'alumno.idalumno', '=', 'alumnodeudas.idalumno')
+        ->where('alumnodeudas.idalumno','=', $alumno)
+        ->groupBy('alumnodeudas.idalumno')
+        ->get();  
+          
+   
+    }
+
+
 
     public function getAlumnoByID($alumno)
     {
@@ -39,7 +52,6 @@ class AlumnoRepo {
          ->orWhere('dni', $alumno)
          ->get();
     }
-
     public function getAlumno($alumno)
     {
          return Alumno::
@@ -52,18 +64,11 @@ class AlumnoRepo {
          ->orderBy('idperiodomatricula','desc')
          ->get();
     }
-
-
-
 public function getAlumnoRestricciones($alumno){
  return Restringidos::where('fullname','LIKE',$alumno.'%')
                 ->orWhere('dni', $alumno)
                 ->get();
-
-
 }
-
-
     public function getAlumnoRestricciones2($alumno)
     {
         DB::enableQueryLog();
@@ -78,15 +83,10 @@ public function getAlumnoRestricciones($alumno){
             $inicio = date('Y-m-d');
             $fin = date('Y-m-d');
         }
-
         $idAlumnos = array();
         $observaciones =  AlumnoObservacion::where('idtipoobservacion',4)
                             ->whereBetween('created_at',array($inicio,$fin))
                             ->get();
-
-
-
-
         $alumnoOb = array();
         foreach($observaciones as $ob){
             if(!in_array($ob->idalumno, $idAlumnos)){
@@ -94,33 +94,20 @@ public function getAlumnoRestricciones($alumno){
             }
             $alumnoOb[$ob->idalumno] = $ob;
         }
-
         if($alumno){
-
             $restringidos = Alumno::whereIn('idalumno',$idAlumnos)
                 ->where('nombres','LIKE','%'.$alumno.'%')
                 ->orWhere('dni', $alumno)
                 ->orWhere('codigo', $alumno)
                 ->get();
-
         }else{
-
             $restringidos = Alumno::whereIn('idalumno',$idAlumnos)->get();
-
         }
-
         foreach($restringidos as &$r){
             $r->observacion = $alumnoOb[$r->idalumno];
         }
-
-
         return $restringidos;
     }
-
-
-
-
-
 public function getAllObservaciones($id)
     {
         return AlumnoObservacion::
@@ -130,9 +117,6 @@ public function getAllObservaciones($id)
          ->orderBy('alumnoobservacion.created_at','desc')
          ->get();
     }
-
-
-
     public function SaveDeudasAlumno($iduser, $alumno, $periodo)
     {
         for ($i=4; $i <= 12 ; $i++) {
@@ -146,7 +130,6 @@ public function getAllObservaciones($id)
             $deuda->save();
         }
     }
-
     public function SavePensionesAlumno($iduser, $alumno, $periodo, $pension)
     {
             $mensualidades = new Mensualidades;
@@ -158,7 +141,6 @@ public function getAllObservaciones($id)
             $mensualidades->idperiodomatricula  = $periodo;
             $mensualidades->save();
     }
-
     public function SaveAlumno($idperiodomatricula,$iduser, $rawAlumno)
     {
        $codigoAlumno = Alumno::select('codigo')->orderBy('idalumno','=','desc')->take(1)->get();
@@ -171,7 +153,6 @@ public function getAllObservaciones($id)
         { $numero = substr($codigoAlumno[0]->codigo,7,5); }
         $anio = date('Y')."-";
         $newcode = $numero+1;
-
             $existingAlumno = new Alumno;
             $existingAlumno->nombres = $rawAlumno['alu_nonbres'];
             if($rawAlumno['alu_codigo'])
@@ -187,8 +168,6 @@ public function getAllObservaciones($id)
             {
                 $existingAlumno->codigo = "HU".$anio.(str_pad($newcode,3,"0",STR_PAD_LEFT));
             }
-
-
             $existingAlumno->apellido_paterno = $rawAlumno['alu_apellido_paterno'];
             $existingAlumno->apellido_materno = $rawAlumno['alu_apellido_materno'];
             $existingAlumno->fullname = $rawAlumno['alu_nonbres']." ".$rawAlumno['alu_apellido_paterno']." ".$rawAlumno['alu_apellido_materno'];
@@ -204,7 +183,6 @@ public function getAllObservaciones($id)
             $existingAlumno->idestadoalumno = $rawAlumno['alu_estadoalumno'];
             $existingAlumno->usercreate = $iduser;
             $existingAlumno->save();
-
         //registro el Alumno Matricula, pedimos a esta alumno registrado
             $lastAlumno = Alumno::select('idalumno')->orderBy('idalumno','desc')->take(1)->get();
             $alumnoMatricula = new AlumnoMatricula;
@@ -216,6 +194,7 @@ public function getAllObservaciones($id)
                 $alumnoMatricula->idgrado = $rawAlumno['alu_grado'];
                 $alumnoMatricula->idpension = $rawAlumno['alu_pension'];
                 $alumnoMatricula->idestadomatricula = $rawAlumno['alu_estado'];
+                $alumnoMatricula->vencimiento = $rawAlumno['alu_vencimiento'];
                 $alumnoMatricula->idtipopension = $rawAlumno['alu_tipopension'];
                 $alumnoMatricula->usercreate = $iduser;
                 $alumnoMatricula->updated_at = '';
@@ -237,7 +216,6 @@ public function getAllObservaciones($id)
                 ->update(['qty_matriculados' => $newMatriculados]);
             return true;
     }
-
     public function SaveApoderado($iduser, $rawApoderados)
     {
         $lastAlumno = Alumno::select('idalumno')->orderBy('idalumno','desc')->take(1)->get();
@@ -254,7 +232,6 @@ public function getAllObservaciones($id)
         $existingApo->p_telefonotrabajo = $rawApoderados['p_telefonotrabajo'];
         $existingApo->p_celular         = $rawApoderados['p_celular'];
         $existingApo->p_email           = $rawApoderados['p_email'];
-
         $existingApo->m_nombres         = $rawApoderados['m_nombres'];
         $existingApo->m_apellidos       = $rawApoderados['m_apellido'];
         $existingApo->m_dni             = $rawApoderados['m_dni'];
@@ -264,7 +241,6 @@ public function getAllObservaciones($id)
         $existingApo->m_telefonotrabajo = $rawApoderados['m_telefonotrabajo'];
         $existingApo->m_celular         = $rawApoderados['m_celular'];
         $existingApo->m_email           = $rawApoderados['m_email'];
-
         $existingApo->a_nombres         = $rawApoderados['a_nombres'];
         $existingApo->a_apellidos       = $rawApoderados['a_apellido'];
         $existingApo->a_dni             = $rawApoderados['a_dni'];
@@ -274,13 +250,11 @@ public function getAllObservaciones($id)
         $existingApo->a_telefonotrabajo = $rawApoderados['a_telefonotrabajo'];
         $existingApo->a_celular         = $rawApoderados['a_celular'];
         $existingApo->a_email           = $rawApoderados['a_email'];
-
         $existingApo->idalumno          = $lastAlumno[0]->idalumno;
         $existingApo->usercreate        = $iduser;
         $existingApo->save();
         return true;
     }
-
     public function SaveOtrosDatos($iduser, $rawOtherData)
     {
         $lastAlumno = Alumno::select('idalumno')->orderBy('idalumno','desc')->take(1)->get();
@@ -301,7 +275,6 @@ public function getAllObservaciones($id)
         $existingOther->save();
         return true;
     }
-
     public function LastAlumno()
     {
         return Alumno::
@@ -310,9 +283,7 @@ public function getAllObservaciones($id)
          ->orderBy('idalumno','desc')
          ->get();
     }
-
     
-
     public function getObservacionImpedimento($id)
     {
         return AlumnoObservacion::
@@ -322,4 +293,48 @@ public function getAllObservaciones($id)
          ->orderBy('alumnoobservacion.created_at','desc')
          ->get();
     }
+
+
+    //RECEPCIONPAGOS
+
+
+
+     public function getRecepcionPagos($alumno)
+    {
+
+         return RecepcionPagos::
+     
+
+         where('nomcliente','LIKE','%'.$alumno.'%')
+
+         ->get();
+       
+
+    }
+
+
+    public function getIncidencias($alumno)
+    {
+
+         return Alumnomatricula::
+            select('a.idalumno as idalumno','a.codigo','fullname',DB::raw('sum(incidence) as incidencia'),'n.nombre as nivel','g.nombre as grado','s.nombre as seccion','t.nombre as tipopension','p.monto','n.idnivel')
+            ->leftJoin('alumnodeudas as ad','ad.idalumno','=','alumnomatricula.idalumno')
+            ->leftJoin('alumno as a','a.idalumno','=','alumnomatricula.idalumno')
+            ->leftJoin('nivel as n','n.idnivel','=','alumnomatricula.idnivel')
+            ->leftJoin('grado as g','g.idgrado','=','alumnomatricula.idgrado')
+            ->leftJoin('seccion as s','s.idseccion','=','alumnomatricula.idseccion')
+            ->leftJoin('tipopension as t','t.idtipopension','=','alumnomatricula.idtipopension')
+            ->leftJoin('pension as p','p.idpension','=','alumnomatricula.idpension')
+            ->groupBy('a.idalumno')
+            ->having('incidencia','=',$alumno)
+         ->get();
+       
+
+    }
+
+
+
+
 }
+
+

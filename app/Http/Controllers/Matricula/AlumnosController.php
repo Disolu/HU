@@ -63,6 +63,7 @@ class AlumnosController extends Controller
     //Informacion del alumno por (nombre, apellidos, dni)
     $getAlumno = $this->AlumnoRepo->getAlumno($alumno);
 
+
     //Existe periodo de matricula activo.
     $getPeriodoMatricula = $this->PeriodoMatriculaRepo->getPeriodoMatricula($fecha);  
 
@@ -77,6 +78,10 @@ class AlumnosController extends Controller
       return view('matricula.alumnos.buscar', compact('getAlumno','getPeriodoMatricula'));
     }    
   }
+
+
+
+
 
   public function getAlumnoByID(Request $request)
   {
@@ -168,6 +173,9 @@ class AlumnosController extends Controller
     return view('matricula.alumnos.buscar');
   }
 
+
+
+
   public function searchrestringidos(Request $request)
   {
     $alumno = $request['alumno'];
@@ -250,11 +258,16 @@ class AlumnosController extends Controller
 
   public function show($id)
   {
-
     $periodomatricula = $this->PeriodoMatriculaRepo->getLastPeriodoMatricula();
+    
     $archivos = $this->AlumnoMatriculaRepo->getFilesAlumno($id, $periodomatricula[0]->idperiodomatricula);
     $matricula = $this->AlumnoMatriculaRepo->getAllDataAlumno($id, $periodomatricula[0]->idperiodomatricula);
-    $alumno    = $this->AlumnoRepo->getAlumnoJoins($id);          
+    $incidencia    = $this->AlumnoRepo-> getAlumnoincidencias($id,$periodomatricula[0]->idperiodomatricula);  
+  
+    
+
+    $alumno    = $this->AlumnoRepo->getAlumnoJoins($id);    
+
 
     $periodo = DB::table('periodomatricula')
         ->select('a.fullname','a.codigo','periodomatricula.nombre as periodo','a.idalumno','n.*','periodomatricula.idperiodomatricula as idperiodo')
@@ -271,7 +284,7 @@ class AlumnosController extends Controller
       Session::flash('message-danger', ' No hemos encontrado suficientes datos para mostrar la pagina solicitada, consulte con el administrador de sistemas');
       return redirect()->back();            
     }else{            
-      return view('matricula.alumnos.perfil', compact('id','matricula','alumno','archivos','periodo','bimestres'));
+      return view('matricula.alumnos.perfil', compact('id','matricula','alumno','archivos','periodo','bimestres','incidencia'));
     }
   }
 
@@ -367,6 +380,7 @@ class AlumnosController extends Controller
         "idprovincia"  => $request->input('provincia'),
         "iddistrito"   => $request->input('distrito'),
         "idestadoalumno" => $request->input('estadoalumno'),
+
         "fullname" => $request->input('nombres')." ".$request->input('apellido_paterno')." ".$request->input('apellido_materno')
       ]); 
 
@@ -449,6 +463,7 @@ class AlumnosController extends Controller
           'idseccion'   => $request['seccion'],
           'idpension'   => $request['pension'],
           'idtipopension' => $request['alu_tipopension'],
+          'vencimiento' => $request['vencimiento'],
           'updated_at'  => date('Y-m-d H:i:s')
           ]);
     Session::flash('message-success', 'Se actualizo con éxito al alumno'); 
@@ -457,4 +472,69 @@ class AlumnosController extends Controller
     Session::flash('message-danger', 'Se deben seleccionar todas las opciones'); 
     return redirect()->back(); 
   }
+
+
+//RECEPCIONPAGOS
+
+   public function getRecepcionPagos(BuscarAlumnoRequest $request)
+  {
+    $alumno = $request['alumno'];
+    $fecha = date("Y-m-d");
+  
+
+    //Informacion del alumno por (nombre, apellidos, dni)
+    $getHistorial = $this->AlumnoRepo->getRecepcionPagos($alumno);
+  
+    //Existe periodo de matricula activo.
+    $getPeriodoMatricula = $this->PeriodoMatriculaRepo->getPeriodoMatricula($fecha);  
+
+    if( $getHistorial->isEmpty() )
+    {    
+      Session::flash('message-danger', 'El Alumno no se encuentra');            
+      return Redirect::back()->withInput();                         
+    }
+    else
+    {
+      Session::flash('message-search-alumno', 'El alumno ha sido encontrado');  
+      return view('administrador.pagos.recepcionpagos', compact('getHistorial','getPeriodoMatricula'));
+    }    
+  }
+
+
+  public function buscarRecepcionPagos(){
+    return view('administrador.pagos.recepcionpagos');
+  }
+
+
+
+
+   public function getIncidencias(Request $request)
+  {
+    $alumno = $request['alumno'];
+    $fecha = date("Y-m-d");
+  
+
+    //Informacion del alumno por (nombre, apellidos, dni)
+    $getIncidencias= $this->AlumnoRepo->getIncidencias($alumno);
+
+    //Existe periodo de matricula activo.
+    $getPeriodoMatricula = $this->PeriodoMatriculaRepo->getPeriodoMatricula($fecha);  
+
+    if( $getIncidencias->isEmpty() )
+    {    
+      Session::flash('message-danger', 'No existe la cantidad de incidencias mostradas');            
+      return Redirect::back()->withInput();                         
+    }
+    else
+    {
+      Session::flash('message-search-alumno', 'El alumno ha sido encontrado');  
+      return view('administrador.pagos.incidencias', compact('getIncidencias','getPeriodoMatricula'));
+    }    
+  }
+
+
+  public function buscarIncidencias(){
+    return view('administrador.pagos.incidencias');
+  }
+
 }

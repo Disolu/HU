@@ -101,6 +101,16 @@
 					<label>Teléfono</label>
 					<input class="form-control" name="telefono" type="text" placeholder="Ingrese un telefono" data-bind="value: atelefono">
 				</div>
+				<div class="form-group">
+				<label>Fecha de vencimiento </label>
+				<div class="input-group col-sm-5">
+  				<input type="text" class="form-control" placeholder="Ingrese día" name="vencimiento" data-bind="value: avencimiento">
+  				<span class="input-group-addon" id="basic-addon2">De cada mes</span>
+				</div>
+			</div>
+
+
+
 			</div>
 			
 			<div style="clear:both"></div>
@@ -408,7 +418,7 @@
             dataType: 'json',
             data:
             {
-                sede: $.cookie("idsede"), nivel: $.cookie("idnivel"), grado: $.cookie("idsede"), seccion: $.cookie("idsede"),
+                sede: $.cookie("idsede"), nivel: $.cookie("idnivel"), grado: $.cookie("idgrado"), seccion: $.cookie("idseccion"),
                 _token: '{!! csrf_token() !!}'
             },
             success:  function (r)
@@ -441,6 +451,7 @@
 	    fo.adistrito = ko.observable(null);
 	    fo.adireccion = ko.observable(null);
 	    fo.atelefono = ko.observable(null);
+	    fo.avencimiento = ko.observable(null);
 	    fo.datavacante = ko.observable(null);
 	    fo.pension = ko.observable(null);
 	    fo.estadoalumno = ko.observable(null);
@@ -590,7 +601,8 @@
 	        fo.aprovincia(fofi.alu_provincia);
 	        fo.adistrito(fofi.alu_distrito);
 	        fo.adireccion(fofi.alu_direccion);
-	        fo.atelefono(fofi.alu_telefono);	        
+	        fo.atelefono(fofi.alu_telefono);	 
+	        fo.avencimiento(fofi.alu_vencimiento);       
 
 	        $("input[name='alu_estado'][value='" + fofi.alu_estado +"']").closest('label').addClass("active");
 	        $("input[name='alu_estado'][value='" + fofi.alu_estado +"']").prop('checked', true);
@@ -685,6 +697,7 @@
 	            alu_direccion : fo.adireccion(),
 	            alu_telefono : fo.atelefono(),
 	            alu_pension : fo.pension(),
+	            alu_vencimiento:fo.avencimiento(),
 	            alu_estado : $("input[name=alu_estado]:checked").val(),
 	            alu_tipopension : $("input[name=alu_tipopension]:checked").val(),
 	            alu_estadoalumno : $("input[name=estadoalumno]:checked").val(),	           
@@ -737,7 +750,8 @@
 	            aprovincia : fo.aprovincia(),
 	            adistrito : fo.adistrito(),
 	            adireccion : fo.adireccion(),
-	            atelefono : fo.atelefono()
+	            atelefono : fo.atelefono(),
+	            avencimiento: fo.avencimiento()
 	        }
 	        var objOtherData = {
 	            datos_id : fo.datos_id(),

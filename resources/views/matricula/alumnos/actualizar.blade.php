@@ -326,6 +326,7 @@
 				</div>
 
 				<hr>
+<!--
 				<div class="col-md-12">
 					<label><strong>Tipo de Pension</strong></label> <br>
 					<div class="btn-group" data-toggle="buttons">
@@ -386,6 +387,9 @@
 						</div>
 					</div>
 				</div>
+-->
+
+
 			</div>
 
 			<div style="clear:both"></div>

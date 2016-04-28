@@ -38,7 +38,9 @@ class GeneratePayments extends Command
             
             //TRAEMOS TODOS LOS ESTUDIANTES
             $students= $this->getStudentsbySede($sede->idsede);   
-           //dd($students);
+            $incidences= $this->incidence(); 
+            //dd($incidences);
+           
               
           
 
@@ -88,32 +90,37 @@ class GeneratePayments extends Command
                     
 
                     $fec_ref= "";
+
                     $counter=$student->mesdeuda+1;
                     $counterformat=number_format($counter);
-                    $fecspec=$student->a_estadocivil;
-                   
+                    $fecspec=$student->vencimiento;
                     
-
-
+                    if(strlen($fecspec)==1){
+                      $fecspec="-0".$fecspec;
+                    }
+                    else{
+                      $fecspec="-".$fecspec;
+                    }
+          
 
 
                     switch(true)
                       {
                         //Caso Mensualidad+1 entre los valores del 1 al 9 y diferente de 8, es decir Julio y Fechaespecial=1=no
-                        case (strlen($counter)==1 && $counter!=8 && $fecspec=='1'):
-                          $fec_ref=$year.'-'."0".$counterformat.'-03';
+                        case (strlen($counter)==1 && $counter!=8):
+                          $fec_ref=$year.'-'."0".$counterformat.$fecspec;
                           break;
                         //Caso mensualidad+1 entre valores 1 al 9 y que no sea julio pero si tiene fecha especial.
-                        case (strlen($counter)==1 && $counter!=8 && $fecspec=='4'):
-                          $fec_ref=$year.'-'."0".$counterformat.'-05';
+                        case (strlen($counter)==1 && $counter!=8):
+                          $fec_ref=$year.'-'."0".$counterformat.$fecspec;
                           break;
                           //Caso mensualidad entre 10,11 y menor igual a 12 y sin fecha especial (venc=03 del siguiente mes)
-                        case (strlen($counter) == 2 && $counter<=12 && $fecspec=='1'):
-                          $fec_ref=$year.'-'.$counterformat.'-03';
+                        case (strlen($counter) == 2 && $counter<=12):
+                          $fec_ref=$year.'-'.$counterformat.$fecspec;
                           break;
                           //Caso mensualidad entre 10,11 y menor a 12 y con fecha especial(vence 05 del siguiente mes)
-                        case (strlen($counter)==2 && $counter<=12 && $fecspec=='4'):
-                           $fec_ref=$year.'-'.$counterformat.'-05';
+                        case (strlen($counter)==2 && $counter<=12):
+                           $fec_ref=$year.'-'.$counterformat.$fecspec;
                           break;
                           //Caso mensualidad mayor 12 (exp)
                         case ($counter>12):
@@ -130,45 +137,12 @@ class GeneratePayments extends Command
 
 
 
-                //CONDICIONALES DE VENCIMIENTO
-                 //   if(strlen($counter)==2 && $counter<=12 && $fecspec==1){
-                 //     $fec_ref=$year.'-'.$counterformat.'-03';
-                 //   }
-                 //   elseif(strlen($counter)==1 && $counter!=8 && $fecspec==1)
-                 //   {
-                 //      $fec_ref=$year.'-'."0".$counterformat.'-03';
-                 //   }
-                 //    elseif(strlen($counter)==1 && $counter!=8 && $fecspec==2)
-                 //   {
-                 //      $fec_ref=$year.'-'."0".$counterformat.'-05';
-                 //   }
-                 //   elseif(strlen($counter)==2 && $counter<=12 && $fecspec==2){
-                 //     $fec_ref=$year.'-'.$counterformat.'-05';
-                 //   }
-                 //   elseif($counter>12)
-                 //   {
-                 //      $fec_ref=$year.'-'.number_format($student->mesdeuda).'-15';
-                 //   }
-                 //
-                 //    elseif($counter==8)
-                 //   {
-                 //      $fec_ref=$year.'-'.number_format($student->mesdeuda).'-15';
-                 //   }
-
-
-
-
-
-
-                  //CONDICIONALES DE VENCIMIENTO
-          
-
-
                     
                     $fec_serv=new DateTime($today.'+1 year');
                     $comparative=$fec_serv->format('Ymd');
                     $fec_ven = new DateTime( $fec_ref.'+1 year' );
-                    $last_day = $fec_ven->format( 'Ymd' ); 
+
+                    $last_day = $fec_ven->format('Ymd'); 
                     $fec=$fec_ven->format('Y-m-d');
                     $fec_foo= new DateTime($fec_ref.'+1 year +1 months');
                     $fec_bloqueo=$fec_foo->format('Ymt');
@@ -192,9 +166,20 @@ class GeneratePayments extends Command
                       'tail__'          => str_pad( " ", '36'," ", STR_PAD_LEFT),
                     );
 
-                   
 
-//CONTROLANDO VENCIMIENTOS AL TERCER DÍA
+                    if($comparative>$last_day)
+                    {
+                      DB::table('alumnodeudas')
+                      ->where('mes','=',$student->mesdeuda)
+                      ->where('status','=','0')
+                      ->where('incidence','=','0')
+                      ->update(['incidence'=>1]);
+
+                    }
+
+                 
+
+//CONTROLANDO VENCIMIENTOS
                 if($comparative>$last_day && $student->idnivel==1 or $student->mesdeuda==07 && $student->idnivel==1 or $student->mesdeuda==12 && $student->idnivel==1){
 
                     $line['monto_max'] =str_pad(number_format(350.0 * $decimal, 0, '', ''), 15, '0', STR_PAD_LEFT);
@@ -248,30 +233,7 @@ class GeneratePayments extends Command
     }
 
     private function getStudentsbySede($sede){
-      /*
-      $query = DB::table('alumno')
-       ->select('alumno.*',DB::raw('alumnomatricula.*,pension.idpension,pension.monto,mensualidades.*'))
-       ->leftjoin('mensualidades', 'mensualidades.idalumno', '=', 'alumno.idalumno')
-       ->leftjoin('alumnomatricula', 'alumnomatricula.idalumno', '=', 'alumno.idalumno')
-       ->leftjoin('pension', 'pension.idpension', '=', 'mensualidades.idpension')
-       ->where('alumnomatricula.idsede', $sede);
-      */
-
-       /*
-      $query = DB::table('alumnodeudas')
-      ->select('*','alumnodeudas.mes as mesdeuda')
-      ->leftJoin('alumno','alumnodeudas.idalumno','=', 'alumno.idalumno')
-      ->leftjoin('mensualidades', 'mensualidades.idalumno', '=', 'alumnodeudas.idalumno')
-      ->leftjoin('pension', 'pension.idpension', '=', 'mensualidades.idpension')
-      ->leftjoin('alumnomatricula', 'alumnomatricula.idalumno', '=', 'alumno.idalumno')
-
-      ->where('alumnodeudas.idperiodomatricula',  1)
-      ->where('mensualidades.idperiodomatricula', 1)
-      ->where('alumnomatricula.idperiodomatricula',  1)
-      ->where('alumnomatricula.idsede', $sede)
-      ->where('alumnodeudas.status', 0);
-      return $query->get();
-        */
+  
 
       $query = DB::table('alumnodeudas')
       ->select('*','alumnodeudas.mes as mesdeuda')
@@ -406,4 +368,22 @@ class GeneratePayments extends Command
 
         return $th;
     } 
+
+
+
+
+private function incidence()
+{
+   $incidence=DB::table('alumnodeudas')
+        ->select(DB::raw("idalumno,sum(incidence) as incidencias"))
+        ->groupBy('idalumno')
+        ->having('incidencias','>=',1);
+         return $incidence->get();    
+}
+
+
+
+
+
+
 }

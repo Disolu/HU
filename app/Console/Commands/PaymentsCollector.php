@@ -115,13 +115,18 @@ EOT;
         $a = DB::table('alumno')->where('codigo',$codigoAlumno)->take(1)->get();
 
 
+      
         if(!empty($a[0]->idalumno))
         {
             $idalumno = $a[0]->idalumno;
 
-          $b=DB::table('alumnodeudas')->where('idalumno',$idalumno)->take(1)->get(); 
+          $b=DB::table('alumnodeudas')
+          ->where('idalumno',$idalumno)
+          ->where('status','not like','1')
+          ->take(1)->get(); 
           
           $mes=$b[0]->mes;
+         
 
 
         

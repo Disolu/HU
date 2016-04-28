@@ -53,6 +53,27 @@ Route::group( ['middleware' => ['auth'], 'prefix'=>'alumno'], function() {
 	Route::get('pdfpreferencial/{id}/{periodo}', ['as' => 'preferencialPdf', 'uses' => 'PdfController@anexoPreferencial'])->where('id', '[0-9]+');
 	Route::get('pdfespecial/{id}/{periodo}', ['as' => 'especialPdf', 'uses' => 'PdfController@anexoEspecial'])->where('id', '[0-9]+');
 
+
+	//Alumnos Boletas
+	Route::get('boletas/mediabeca', 	       ['as' => 'boletasmb', 	  'uses' => 'SeguimientoPagosController@showboletas']);
+	Route::post('pdfboletamediabeca/mediabeca',    ['as' => 'mediabeca', 'uses' => 'SeguimientoPagosController@mediabeca']);
+
+	Route::get('boletas/pespecial', 	       ['as' => 'boletaspe', 	  'uses' => 'SeguimientoPagosController@showpespecial']);
+	Route::post('pdfboletapespecial/pespecial',    ['as' => 'pespecial', 'uses' => 'SeguimientoPagosController@pespecial']);
+	
+	Route::get('boletas/normal', 	       ['as' => 'boletasnormal', 	  'uses' => 'SeguimientoPagosController@shownormal']);
+	Route::post('pdfboletanormal/normal',    ['as' => 'normal', 'uses' => 'SeguimientoPagosController@normal']);
+
+	Route::get('adv/mediabeca', 	       ['as' => 'advmb', 	  'uses' => 'SeguimientoPagosController@showadvmb']);
+	Route::post('pdfadv/mediabeca',    ['as' => 'advmediabeca', 'uses' => 'SeguimientoPagosController@advmediabeca']);
+
+		Route::get('adv/pe', 	       ['as' => 'advpe', 	  'uses' => 'SeguimientoPagosController@showadvpe']);
+	Route::post('pdfadv/pe',    ['as' => 'advpensionespecial', 'uses' => 'SeguimientoPagosController@advpe']);
+
+	
+	
+	
+
 	//Ver detalles del alumno, step 2 matricula
 	Route::get('/{id}', ['as' => 'alumnodetalle', 'uses' => 'Matricula\AlumnosController@show'])->where('id', '[0-9]+');
 	Route::post('saveArchivosDataUsers/{id}', ['as' => 'saveArchivosDataUsers', 'uses' => 'Matricula\AlumnoUploadController@saveArchivosDataUsers'])->where('id', '[0-9]+');
@@ -60,6 +81,15 @@ Route::group( ['middleware' => ['auth'], 'prefix'=>'alumno'], function() {
 	//Buscando al alumno
 	Route::get('buscar', ['as' => 'alumnobuscar', 'uses' => 'Matricula\AlumnosController@buscar']);
 	Route::post('buscar', ['as' => 'alumnobuscar', 'uses' => 'Matricula\AlumnosController@getAlumno']);
+
+	//Buscando RecepcionPagos
+	Route::get('recepcionpagos', ['as' => 'recepcionpagosbuscar', 'uses' => 'Matricula\AlumnosController@buscarRecepcionPagos']);
+	Route::post('recepcionpagos', ['as' => 'recepcionpagosbuscar', 'uses' => 'Matricula\AlumnosController@getRecepcionPagos']);
+
+
+		Route::get('incidencias', ['as' => 'incidenciasbuscar', 'uses' => 'Matricula\AlumnosController@buscarIncidencias']);
+	Route::post('incidencias', ['as' => 'incidenciasbuscar', 'uses' => 'Matricula\AlumnosController@getIncidencias']);
+
 
 	Route::get('buscar/restringidos', ['as' => 'searchrestringidos', 'uses' => 'Matricula\AlumnosController@searchrestringidos']);
 
@@ -110,6 +140,9 @@ Route::group( ['middleware' => ['auth'], 'prefix'=>'alumno'], function() {
 	Route::post('seguimiento/pagos/search',    ['as' => 'searchSeguimientoPagos', 'uses' => 'SeguimientoPagosController@searchSeguimientoPagos']);
 	Route::post('seguimiento/pagos/ajax', 	   ['as' => 'SeguimientoPagosAjax',   'uses' => 'SeguimientoPagosController@SeguimientoPagosAjax']);
 	Route::post('seguimiento/incidencia/{id}', ['as' => 'SeguimientoIncidencia',  'uses' => 'SeguimientoPagosController@SeguimientoIncidencia']);
+	Route::post('recepcion/pagos/ajax', 	   ['as' => 'RecepcionPagosAjax',   'uses' => 'SeguimientoPagosController@RecepcionPagosAjax']);
+	Route::post('perdida/ajax', 	   ['as' => 'PerdidaBeneficioAjax',   'uses' => 'SeguimientoPagosController@PerdidaBeneficioAjax']);
+	Route::post('recepcion/pagosprofile/ajax', 	   ['as' => 'RecepcionPagosProfile',   'uses' => 'SeguimientoPagosController@RecepcionPagosProfile']);
 
 	//Matriculados
 	Route::get('matriculados',

@@ -8,7 +8,7 @@ return [
     'locale' => 'en',
     'fallback_locale' => 'en',
     'key' => env('APP_KEY', 'SomeRandomString'),
-    'cipher' => 'AES-256-CBC',
+    'cipher' => 'AES-128-CBC',
     'log' => 'single',
 
     /*

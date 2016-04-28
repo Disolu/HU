@@ -2,7 +2,7 @@
 namespace App\Core\Repositories\Administrador;
 use App\Core\Entities\AlumnoMatricula;
 use App\Core\Entities\PeriodoMatricula;
-use DB;
+use App\Core\Entities\Alumno;
 
 class ReportesRepo {
     
@@ -122,6 +122,98 @@ class ReportesRepo {
       $pagos->groupBy('alumno.idalumno');
 
       return $pagos->get();
+
       
   }
+
+  
+
+    public function boletas($request)
+  {
+    $idperiodo = $request['periodo'];
+    $idsede    = $request['sede'];
+    $idnivel   = $request['nivel'];
+    $idgrado   = $request['grado'];
+    $tipo =$request['tipo'];
+    $mensualidades=$request['mensualidad'];
+
+    $periodo = PeriodoMatricula::take(1)->orderBy('idperiodomatricula','desc')->get();
+    
+    $mediabeca = AlumnoMatricula::
+    select('alumno.idalumno','fullname','vencimiento as venc','nivel.nombre as niveno','grado.nombre as grano',
+      'seccion.nombre as seno','codigo','idestadoalumno','monto','users.nombre as nameregister','telefono',
+      'alumnodeudas.mes','periodomatricula.nombre as periodo')
+     
+     ->leftJoin('alumno', 'alumnomatricula.idalumno', '=', 'alumno.idalumno')
+     ->leftJoin('alumnodeudas','alumnodeudas.idalumno','=','alumno.idalumno')
+     ->leftJoin('mensualidades as m', 'alumno.idalumno', '=', 'm.idalumno')
+     ->leftJoin('pension as p', 'm.idpension', '=', 'p.idpension')
+     ->leftJoin('users', 'alumnomatricula.usercreate', '=', 'users.id')
+     ->leftJoin('nivel','alumnomatricula.idnivel','=','nivel.idnivel')
+     ->leftJoin('grado','alumnomatricula.idgrado','=','grado.idgrado')
+     ->leftJoin('seccion','alumnomatricula.idseccion','=','seccion.idseccion')
+     ->leftJoin('periodomatricula','alumnomatricula.idperiodomatricula','=','periodomatricula.idperiodomatricula')
+
+
+     ->where('alumnomatricula.idtipopension','=',$tipo)
+     ->where('alumnodeudas.idperiodomatricula', $periodo[0]->idperiodomatricula);
+
+      if($idperiodo) {
+          $mediabeca->where('alumnomatricula.idperiodomatricula','=',$idperiodo);
+      }
+      if ($idsede) {
+          $mediabeca->where('alumnomatricula.idsede','=',$idsede);
+      }
+      if ($idnivel) {
+          $mediabeca->where('alumnomatricula.idnivel','=',$idnivel);
+      }
+      if ($idgrado) {
+          $mediabeca->where('alumnomatricula.idgrado','=',$idgrado);
+      }
+       if ($mensualidades) {
+         $mediabeca->where('alumnodeudas.mes','=',$mensualidades);
+          $mediabeca->where('alumnodeudas.status','=','0');
+      }
+
+      
+      $mediabeca->where('alumno.impedimento','<>','1');
+      $mediabeca->groupBy('alumno.idalumno');
+      $tipo="";
+      return $mediabeca->get();
+      
+      
+  }
+
+
+   public function advertencia($request)
+  {
+    $idperiodo = $request['periodo'];
+    $tipo =$request['tipo'];
+    $mensualidades=$request['mensualidad'];
+  
+
+    $periodo = PeriodoMatricula::take(1)->orderBy('idperiodomatricula','desc')->get();
+    
+    $advertencia = Alumno::
+    select('alumno.idalumno','fullname','alumnodeudas.mes as mes','alumnodeudas.incidence as incidencias','nivel.nombre as nivel','grado.nombre as grado')
+      ->leftJoin('alumnodeudas', 'alumnodeudas.idalumno', '=', 'alumno.idalumno')
+      ->leftJoin('alumnomatricula','alumnomatricula.idalumno','=','alumno.idalumno')
+      ->leftJoin('nivel','alumnomatricula.idnivel','=','nivel.idnivel')
+      ->leftJoin('grado','alumnomatricula.idgrado','=','grado.idgrado')
+
+     ->where('alumnomatricula.idtipopension','=',$tipo)
+     ->where('alumnodeudas.mes','=',$mensualidades)
+     ->where('alumnodeudas.idperiodomatricula', $periodo[0]->idperiodomatricula)
+     ->groupBy('alumno.idalumno')
+    ->having('incidence', '=', 1);
+    $tipo="";
+     return $advertencia->get();
+
+
+      
+  }
+
+
 }
+
+

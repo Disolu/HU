@@ -55,7 +55,7 @@
 					<div class="input-group input-search">
                         <input type="text" class="form-control" name="alumno" id="alumno" placeholder="Buscar alumno...">
                         <span class="input-group-btn">
-                            <button class="btn btn-default"  data-bind="click: consultarAlumno" type="submit"><i class="fa fa-search"></i></button>
+                            <button class="btn btn-default"  type="submit"><i class="fa fa-search"></i></button>
                         </span>
 					</div>
 					<span class="help-block">

@@ -17,6 +17,7 @@ class AlumnoMatricula extends Model
     'idgrado',           
     'idperiodomatricula',
     'idpension',
+    'vencimiento',
     'idperiodomatricula',
     'idestadomatricula',
     'idtipopension',

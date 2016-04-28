@@ -27,42 +27,43 @@ elseif(Auth::user()->idrol==5)
 @include('alertas.success')
 @include('alertas.error')
 <header class="panel-heading">
-				<h2 class="panel-title">Pagos</h2>
+				<h2 class="panel-title">BOLETAS - PENSIÓN ESPECIAL</h2>
 			</header>
-{!! Form::open(['route' => 'searchSeguimientoPagos', 'method' => 'post']) !!}
+{!! Form::open(['route' => 'pespecial', 'method' => 'post']) !!}
 {!! csrf_field() !!}
 	<div class="panel-body">
 		<div class="row">
-		  <div class="col-md-3">
+		  <div class="col-md-2">
 		  	<fieldset>
 				<div class="form-group">
 					<select name="periodo" id="cboPeriodo" class="form-control mb-md" data-bind="options: periodos, optionsText: 'nombre', optionsValue: 'idperiodomatricula', value: pediodoSeleccionado"></select>
 				</div>
 			</fieldset>
+			<input type="hidden" value="2" name="tipo" id="tipo">
 		  </div>
 		  <div class="col-md-3">
 		  	<fieldset>
 				<div class="form-group">
-					<select name="sede"  id="cboSede" class="form-control mb-md" data-bind="options: sedes, optionsText: 'nombre', optionsValue: 'idsede',  optionsCaption: 'Seleccione una Sede', value: sedeSeleccionada"></select>
+					<select name="sede"  id="cboSede" class="form-control mb-md" data-bind="options: sedes, optionsText: 'nombre', optionsValue: 'idsede',  optionsCaption: 'Sede', value: sedeSeleccionada"></select>
 				</div>
 			</fieldset>
 		  </div>
-		  <div class="col-md-3">
+		  <div class="col-md-2">
 		  	<fieldset>
 				<div class="form-group">
-					<select name="nivel"  id="cboNivel" class="form-control mb-md" data-bind="options: niveles, optionsText: 'nombre', optionsValue: 'idnivel',  optionsCaption: 'Seleccione un Nivel', value: nivelSeleccionado"></select>
+					<select name="nivel"  id="cboNivel" class="form-control mb-md" data-bind="options: niveles, optionsText: 'nombre', optionsValue: 'idnivel',  optionsCaption: 'Nivel', value: nivelSeleccionado"></select>
 				</div>
 			</fieldset>
 		  </div>
-		  <div class="col-md-3">
+		  <div class="col-md-2">
 		  	<fieldset>
 				<div class="form-group">
-					<select name="grado"  id="cboGrado" class="form-control mb-md" data-bind="options: grados, optionsText: 'nombre', optionsValue: 'idgrado',  optionsCaption: 'Seleccione un Grado', value: gradoSeleccionado"></select>
+					<select name="grado"  id="cboGrado" class="form-control mb-md" data-bind="options: grados, optionsText: 'nombre', optionsValue: 'idgrado',  optionsCaption: 'Grado', value: gradoSeleccionado"></select>
 				</div>
 			</fieldset>
 			</div>
 
-			  <div class="col-md-3">
+			  <div class="col-md-2">
 		  	<fieldset>
 				<div class="form-group">
 					<select name="mensualidad"  id="cboMensualidad" class="form-control mb-md"   optionsCaption: 'Seleccione Mes'>
@@ -79,112 +80,24 @@ elseif(Auth::user()->idrol==5)
 							<option value="12">Diciembre</option>
 											
 						</select>
+
 				</div>
+
 			</fieldset>
 			</div>
-		</div>
-        <div class="row">
-            <div class="col-md-12">
-                {!! Form::label('Dni', 'Dni') !!}
-                {!! Form::text('dni', $value = null, $attributes = array('class' => 'form-control')) !!}
 
-            </div>
-        </div>
+		</div>
+
 	</div>
 
 	<div class="panel-footer">
-		<a href='{!! route("excelpagos",$request) !!}' class="mb-xs mt-xs mr-xs btn btn-info text-left">
-				<i class="fa fa-thumbs-up"></i> Descargar
-		</a>
-		<button type="submit" id="consultar" class="btn btn-primary col-md-offset-9 text-right">Consultar</button>
+	<button type="submit" id="consultar" formtarget="_blank" class="btn btn-info col-md-offset-9 text-right">Descargar PDF   <span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span></button>
+		
+		
 	</div>
 {!! Form::close() !!}
 
-	@if($pagos)
-		<section class="panel">
-			<div class="row">
-				<div class="col-md-12">
-					<section class="panel">
-						<div class="panel-body">
-							<div class="table-responsive">
-								<table class="table mb-none">
-									<thead>
-										<tr>
-											<th>Nombres</th>
-											<th>Codigo</th>
-											<th>Teléfono</th>
-											<th>Mensualidad</th>
-											<th>Mes</th>
-											<th></th>
-										</tr>
-									</thead>
-									<tbody>
-									@foreach($pagos as $data)
-
-										<tr>
-											<td>{!! $data->fullname !!}</td>
-											<td>{!! $data->codigo !!}</td>
-											<td>{!! $data->telefono !!}</td>
-											<td>{!! $data->monto !!}</td>
-											<td>{!! $meses[$data->mes] !!}</td>
-											<td>
-												<!-- Modal Basic -->
-												<a class="mb-xs mt-xs mr-xs btnDetails" data-id="{!! $data->idalumno !!}">
-													Ver estado
-												</a> |
-												<a href="{!! route('pagosObservacion', $data->idalumno) !!}">
-													Crear Inicidencia
-												</a>
-											</td>
-										</tr>
-
-									@endforeach
-									</tbody>
-								</table>
-								<div id="modalBasic" class="modal-block mfp-hide">
-									<section class="panel">
-										<header class="panel-heading">
-											<h2 class="panel-title">Estado de pagos</h2>
-										</header>
-										<div class="panel-body">
-											<div class="modal-wrapper">
-												<div class="modal-text">
-													PERIODO: <strong>ACTUAL</strong>
-													<table class="table table-hover mb-none">
-														<thead>
-															<tr>
-																<th>Mes</th>
-																<th>Mensualidad</th>
-																<th>Pensión Real</th>
-																<th>Estado</th>
-															</tr>
-														</thead>
-														<tbody id="tableajax">
-														</tbody>
-													</table>
-												</div>
-											</div>
-										</div>
-										<footer class="panel-footer">
-											<div class="row">
-												<div class="col-md-12 text-right">
-													<button class="btn btn-default modal-dismiss">Cerrar</button>
-												</div>
-											</div>
-										</footer>
-									</section>
-								</div>
-							</div>
-
-						</div>
-					</section>
-				</div>
-			</div>
-		</section>
-	@endif
 </div>
-
-
 
 @endsection
 
@@ -194,6 +107,7 @@ elseif(Auth::user()->idrol==5)
 <!-- jQuery Cookie -->
 <script type="text/javascript">
   $(document).ready(function(){
+
   	function TranslateDate(theDate)
   	{
   		var date;
@@ -243,33 +157,6 @@ elseif(Auth::user()->idrol==5)
   		return "Pagos: "+date;
   	}
 
-
-
-
-function TranslatePen(thePen)
-  	{
-  		var pension;
-  		switch(thePen)
-  		{
-		    case 1:
-		        real = 350;
-		        break;
-		    case 2:
-		        real = 380;
-		        break;
-		    case 3:
-		        real = 400;
-		        break;
-		    
-
-		    default:
-		    	  real = "Not found";
-		    	  break;
-  		}
-  		return +real;
-  }
-
-
     $('.btnDetails').click(function(){
       $.ajax({
         method: "POST",
@@ -292,16 +179,13 @@ function TranslatePen(thePen)
           	var estado;
             $.each(r, function(i)
             {
-            	var pen = r[i].nivel;
+
             	var date = r[i].mesdeuda;
             	if(r[i].status == 1 ) { estado = "<span class='label label-primary'>Pagado</span>"; } else { estado = "<span class='label label-danger'>Pendiente</span>" }
 	            options += "<tr>";
 	              options += "<td>"+TranslateDate(date)+"</td>";
-	              options += "<td>S/."+r[i].montopagar+"</td>";
-	              options += "<td>S/."+TranslatePen(pen)+"</td>";
+	              options += "<td>"+r[i].montopagar+"</td>";
 	              options += "<td>"+estado+"</td>";
-	              
-
 	            options += "</tr>";
             });
             $('#tableajax').html(options);

@@ -87,6 +87,14 @@
 							</div>
 						</fieldset>
 						</div>
+
+						<div class="form-group">
+				<label>Fecha de vencimiento </label>
+				<div class="input-group col-sm-5">
+  				<input type="text" class="form-control" placeholder="Ingrese día" name="vencimiento" data-bind="value: avencimiento">
+  				<span class="input-group-addon" id="basic-addon2">De cada mes</span>
+				</div>
+			</div>
 					</div>
 				</div>
 

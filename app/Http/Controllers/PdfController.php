@@ -1,11 +1,13 @@
 <?php
 namespace App\Http\Controllers;
-
+use App\Core\Repositories\Administrador\ReportesRepo;
 use Illuminate\Http\Request;
 use App\Http\Requests;
 use App\Core\Repositories\Matricula\AlumnoMatriculaRepo;
 use App\Core\Repositories\Alumno\AlumnoApoderadoRepo;
 use App\Http\Controllers\Controller;
+
+
 
 class PdfController extends Controller
 {
@@ -45,4 +47,8 @@ class PdfController extends Controller
 		$pdf->loadHTML($view);
 		return $pdf->stream('invoice');
 	}
+
+
+
+
 }

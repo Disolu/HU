@@ -27,16 +27,26 @@
 		<header class="clearfix">
 			<div class="row">
 				<div class="col-sm-6 mt-md">
+
+					
 					<h2 class="h2 mt-none mb-sm text-dark text-bold">
+
+
+					
 					{!! $matricula[0]->alu_nombres !!}
 					{!! $matricula[0]->apellido_paterno !!}
 					{!! $matricula[0]->apellido_materno !!}
 					</h2>
 					<h4 class="h4 m-none text-dark text-bold">Codigo: {!! $matricula[0]->codigo !!}</h4>
 					<a href="{!! route('observacion',$id) !!}" class="mb-xs mt-xs mr-xs btn btn-xs btn-default">Observaciones</a>
+					<a class="mb-xs mt-xs mr-xs btn btn-xs btn-default recepcionpagos" data-id="{!! $matricula[0]->codigo !!}">Ver historial de pagos</a>
+
+
 				</div>
 				<div class="col-sm-6 text-right mt-md mb-md">
 					<address class="ib mr-xlg">
+						Incidencias de pago: {!! $incidencia[0]->incidencias !!}
+						<br>
 						Dni: {!! $matricula[0]->dni !!}
 						<br>
 						{!! $matricula[0]->direccion !!}
@@ -299,12 +309,71 @@
 		<a href="{!! route('alumnobuscar') !!}" class="btn btn-primary ml-sm">Salir</a>
 	</div>
 </div>
+
+
+<style type="text/css">
+  .cabeza{
+
+			text-align:center; 
+  			background-color: #F7F8E0;
+          	vertical-align:middle;
+         	 text-transform:uppercase; 
+                }
+
+                .cuerpo{
+  			text-align:center; 
+          vertical-align:middle;
+          text-transform:uppercase; 
+
+
+                }
+                </style>
+
+<div id="modalRecepcion" class="modal-block mfp-hide">
+									<section class="panel">
+										<header class="panel-heading">
+											<h2 class="panel-title">Historial de pagos</h2>
+										</header>
+										<div class="panel-body">
+											<div class="modal-wrapper">
+												<div class="modal-text">
+													<table width="200%"class="table table-hover mb-none table-striped table-bordered">
+														<thead>
+															<tr>
+																<th class="cabeza">Apellidos y nombres</th>
+																<th class="cabeza">Referencia</th>
+																<th class="cabeza">Monto</th>
+																<th class="cabeza">Fecha de Pago</th>
+																
+
+						
+															</tr>
+														</thead>
+														<tbody id="pagosprofile" class="cuerpo">
+														</tbody>
+													</table>
+												</div>
+											</div>
+										</div>
+										<footer class="panel-footer">
+											<div class="row">
+												<div class="col-md-12 text-right">
+													<button class="btn btn-default modal-dismiss">Cerrar</button>
+												</div>
+											</div>
+										</footer>
+									</section>
+								</div>
+
 @stop
 
 @section('scripts')
 @parent
 <script type="text/javascript">
   $(document).ready(function(){
+
+	
+
     $('.btnDetails').click(function(){
       $.ajax({
         method: "POST",
@@ -325,6 +394,7 @@
           }
           else
           {
+
           	var options;
             $.each(r, function(i)
             {
@@ -351,6 +421,65 @@
         }
       });
     });
+
+
+ $('.recepcionpagos').click(function(){
+      $.ajax({
+        method: "POST",
+        url: "{!! route('RecepcionPagosProfile') !!}",
+        dataType: 'json',
+        data:
+        {
+          idalumno: $(this).data('id'),
+          _token: '{!! csrf_token() !!}'
+        },
+        success:  function (r)
+        {
+          if(r.length < 1)
+          {
+            alert('No encontramos pagos para este alumno.');
+          }
+          else
+          {
+          	var options;
+          	var estado;
+            $.each(r, function(i)
+
+
+            {
+
+            	var fecha = r[i].refpago;
+            	
+	            options += "<tr>";
+	              options += "<td>"+r[i].nomcliente+" </td>";
+	              options += "<td>"+r[i].refpago+"</td>";
+	              options += "<td>S/. "+r[i].importeorigen+"</td>";
+	              options += "<td>"+r[i].fecpago+"</td>";
+	            options += "</tr>";
+            });
+
+
+
+
+
+
+
+            $('#pagosprofile').html(options);
+            $.magnificPopup.open({
+                items: {
+                    src: $('#modalRecepcion')[0]
+                },
+                type: 'inline'
+            });
+          }
+        },
+        error: function()
+        {
+          alert('error inesperado.');
+        }
+      });
+    });
+
 
   });
 </script>
