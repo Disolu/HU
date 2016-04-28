@@ -68,8 +68,6 @@ class SeguimientoPagosController extends Controller
     return view('administrador.boletas.advmb', compact('pagos','request'));
   }
 
-  
-
   public function showadvpe()
   {
     $periodo = DB::table('periodomatricula')->take(1)->orderBy('idperiodomatricula','desc')->get();
@@ -136,7 +134,7 @@ $meses = array( '01'=> 'ENERO', '02' => 'FEBRERO', '03' => 'MARZO', '04' => 'ABR
 
 
   
-$view = \View::make('pdf.boletamediabeca', compact('mediabeca','request','grado','periodo','meses'))->render();
+$view = \View::make('pdf/boletamediabeca', compact('mediabeca','request','grado','periodo','meses'))->render();
     $pdf  = \App::make('dompdf.wrapper');
     $pdf->loadHTML($view);
     return $pdf->stream('invoice');
@@ -161,7 +159,7 @@ $view = \View::make('pdf.boletamediabeca', compact('mediabeca','request','grado'
     $grado = Grado::with('sede')->with('nivel')->where('idgrado',$request['grado'])->first();
 
   
-    $view = \View::make('pdf.pespecial', compact('mediabeca','request','grado','periodo','meses'))->render();
+    $view = \View::make('pdf/pespecial', compact('mediabeca','request','grado','periodo','meses'))->render();
     $pdf  = \App::make('dompdf.wrapper');
     $pdf->loadHTML($view);
     return $pdf->stream('invoice');
@@ -187,7 +185,7 @@ $view = \View::make('pdf.boletamediabeca', compact('mediabeca','request','grado'
     $grado = Grado::with('sede')->with('nivel')->where('idgrado',$request['grado'])->first();
 
   
-    $view = \View::make('pdf.normal', compact('mediabeca','request','grado','periodo','meses'))->render();
+    $view = \View::make('pdf/normal', compact('mediabeca','request','grado','periodo','meses'))->render();
     $pdf  = \App::make('dompdf.wrapper');
     $pdf->loadHTML($view);
     return $pdf->stream('invoice');
@@ -211,7 +209,7 @@ $view = \View::make('pdf.boletamediabeca', compact('mediabeca','request','grado'
 
 
   
-    $view = \View::make('pdf.advmediabeca', compact('advmediabeca','request','periodo','meses'))->render();
+    $view = \View::make('pdf/advmediabeca', compact('advmediabeca','request','periodo','meses'))->render();
     $pdf  = \App::make('dompdf.wrapper');
     $pdf->loadHTML($view);
     return $pdf->stream('invoice');
@@ -235,7 +233,7 @@ $view = \View::make('pdf.boletamediabeca', compact('mediabeca','request','grado'
 
 
   
-    $view = \View::make('pdf.advpe', compact('advpe','request','periodo','meses'))->render();
+    $view = \View::make('pdf/advpe', compact('advpe','request','periodo','meses'))->render();
     $pdf  = \App::make('dompdf.wrapper');
     $pdf->loadHTML($view);
     return $pdf->stream('invoice');
