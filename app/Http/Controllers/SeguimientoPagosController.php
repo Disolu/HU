@@ -37,7 +37,7 @@ class SeguimientoPagosController extends Controller
     $pagos = array();
     $request = array('sede'=>'','grado'=>'','nivel'=>'');
 
-    return view('administrador.boletas.boletas', compact('pagos','request'));
+    return view('administrador/boletas/boletas', compact('pagos','request'));
   }
 
 
@@ -47,7 +47,7 @@ class SeguimientoPagosController extends Controller
     $pagos = array();
     $request = array('sede'=>'','grado'=>'','nivel'=>'');
 
-    return view('administrador.boletas.pespecial', compact('pagos','request'));
+    return view('administrador/boletas/pespecial', compact('pagos','request'));
   }
 
    public function shownormal()
@@ -56,7 +56,7 @@ class SeguimientoPagosController extends Controller
     $pagos = array();
     $request = array('sede'=>'','grado'=>'','nivel'=>'');
 
-    return view('administrador.boletas.normal', compact('pagos','request'));
+    return view('administrador/boletas/normal', compact('pagos','request'));
   }
 
     public function showadvmb()
@@ -65,7 +65,7 @@ class SeguimientoPagosController extends Controller
     $pagos = array();
     $request = array('sede'=>'','grado'=>'','nivel'=>'');
 
-    return view('administrador.boletas.advmb', compact('pagos','request'));
+    return view('administrador/boletas/advmb', compact('pagos','request'));
   }
 
   public function showadvpe()
@@ -74,7 +74,7 @@ class SeguimientoPagosController extends Controller
     $pagos = array();
     $request = array('sede'=>'','grado'=>'','nivel'=>'');
 
-    return view('administrador.boletas.advpe', compact('pagos','request'));
+    return view('administrador/boletas/advpe', compact('pagos','request'));
   }
 
    
