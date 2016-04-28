@@ -303,6 +303,51 @@
 										</li>
 									</ul>
 								</li>
+
+									<li class="nav-parent">
+									<a>
+										<i class="fa fa-copy" aria-hidden="true"></i>
+										<span>Boletas</span>
+									</a>
+									<ul class="nav nav-children">
+										<li>
+											<a href="{!! route('boletasnormal') !!}">
+												Pensión Normal
+											</a>
+										</li>
+										<li>
+											<a href="{!! route('boletasmb') !!}">
+												Media Beca
+											</a>
+										</li>
+										<li>
+											<a href="{!! route('boletaspe') !!}">
+												Pensión Especial
+											</a>
+										</li>
+									
+									</ul>
+								</li>
+
+
+									<li class="nav-parent">
+									<a>
+										<i class="fa fa-copy" aria-hidden="true"></i>
+										<span>Advertencias</span>
+									</a>
+									<ul class="nav nav-children">
+										<li>
+											<a href="{!! route('advmb') !!}">
+												Advertencia Media Beca
+											</a>
+										</li>
+										<li>
+											<a href="{!! route('advpe') !!}">
+												Advertencia Pensión Especial
+											</a>
+										</li>
+									</ul>
+								</li>
 						<li class="nav-parent">
 									<a>
 										<i class="fa fa-copy" aria-hidden="true"></i>
@@ -315,6 +360,13 @@
 											</a>
 										</li>
 									</ul>
+								</li>
+								<li class="nav">
+									<a href="{!! route('recepcionpagosbuscar') !!}">
+										<i class="fa fa-copy" aria-hidden="true"></i>
+										Búsqueda de Pagos BBVA
+									</a>
+									
 								</li>
 
 
