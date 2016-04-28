@@ -68,6 +68,8 @@ class SeguimientoPagosController extends Controller
     return view('administrador.boletas.advmb', compact('pagos','request'));
   }
 
+  
+
   public function showadvpe()
   {
     $periodo = DB::table('periodomatricula')->take(1)->orderBy('idperiodomatricula','desc')->get();
